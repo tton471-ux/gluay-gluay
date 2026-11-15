@@ -12,3 +12,10 @@ data/
 *.srt
 *.vtt
 .DS_Store
+
+# Android / Gradle
+.gradle/
+**/build/
+local.properties
+*.iml
+.idea/
