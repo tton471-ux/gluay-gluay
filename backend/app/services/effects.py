@@ -15,7 +15,7 @@ EFFECT_FILTERS: dict[str, str | None] = {
     "vivid": "eq=saturation=1.42:contrast=1.08",
     "soft": "gblur=sigma=0.65",
     "sharpen": "unsharp=5:5:0.8:3:3:0.2",
-    "dream": "split[a][b];[a]gblur=sigma=12[glow];[b][glow]blend=all_mode=screen:all_opacity=0.18",
+    "dream": "eq=brightness=0.025:saturation=1.12, gblur=sigma=0.7",
     "mirror": "hflip",
     "flip": "vflip",
     "blur": "gblur=sigma=8",
