@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "id": "project-uuid",
+    "name": "Untitled Project",
+    "canvas": { "width": 1080, "height": 1920, "fit": "contain" },
+    "frameRate": 30,
+    "tracks": [
+      {
+        "id": "video-track-1",
+        "type": "video",
+        "clips": [
+          {
+            "id": "clip-uuid",
+            "sourceUri": "content://...",
+            "sourceInMs": 0,
+            "sourceOutMs": 5000,
+            "timelineStartMs": 0,
+            "speed": 1.0,
+            "volume": 1.0,
+            "rotationDegrees": 0,
+            "effects": []
+          }
+        ]
+      },
+      { "id": "audio-track-1", "type": "audio", "clips": [] },
+      { "id": "caption-track-1", "type": "caption", "clips": [] }
+    ]
+  }
+}
