@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.gluaygl uay.editor".replace(" ", "")
+    namespace = "com.gluaygluay.editor"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.gluaygl uay.editor".replace(" ", "")
+        applicationId = "com.gluaygluay.editor"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
