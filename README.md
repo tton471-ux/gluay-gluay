@@ -1,41 +1,40 @@
-# GLUAY GLUAY — AI Video Workspace
+# GLUAY GLUAY — Mobile-first Video Editor
 
-A local-first video utility for importing clips, generating AI subtitles with Faster-Whisper, and rendering MP4 files with FFmpeg.
+GLUAY GLUAY is being developed Android-first as a native, local-first video editor. The goal is to import, preview, cut, arrange, subtitle, add effects and export videos on the phone without requiring a cloud backend for basic editing.
 
-## Project status
-Starter repository scaffold. The existing working copy on the Windows PC is not automatically connected to this repository; review and merge these files into that working copy before replacing or deploying anything.
+## Repository status
+This repository contains:
+- An initial native Android app shell under `android/` (Kotlin, Jetpack Compose, AndroidX Media3).
+- A system video picker and local playback preview as the first Android milestone.
+- A Python FastAPI development scaffold under `backend/` for optional transcription/effect experiments.
+- A small web/API check page under `frontend/`; this is not the Android editor UI.
+- A platform-neutral project schema under `shared/`.
 
-## Requirements
-- Windows 10/11
-- Python 3.10–3.12 (Python 3.12 recommended)
-- FFmpeg and FFprobe available on PATH
+The original Windows v0.3.0 working folder is separate and is not automatically synchronized with this repository. Keep a backup before merging any files.
 
-## Quick start (Windows)
-1. Install FFmpeg and confirm `ffmpeg -version` and `ffprobe -version` work in Command Prompt.
-2. Create and activate a virtual environment:
-   ```bat
-   py -3.12 -m venv .venv
-   .venv\Scripts\activate
-   ```
-3. Install dependencies:
-   ```bat
-   python -m pip install --upgrade pip
-   pip install -r requirements.txt
-   ```
-4. Start the API:
-   ```bat
-   uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
-   ```
-5. Check the API at http://127.0.0.1:8000/health.
+## Android first milestone
+Open the `android/` folder in Android Studio, use JDK 17, install Android SDK Platform 35, sync Gradle, then run the `app` configuration on an Android 8.0+ device or emulator. See [android/README.md](android/README.md).
 
-## API endpoints
-- `GET /health` — service status and dependency checks
-- `POST /api/media/upload` — upload a video/audio file; returns a media ID
-- `POST /api/media/{media_id}/transcribe?language=auto` — transcribe speech and return SRT subtitle text
+Current Android scope: choose a video from the system picker and preview/play it locally. Timeline editing, split/delete, project saving, effects, subtitles and export are not implemented in this shell yet.
 
-Uploaded files and generated subtitles are stored under local `data/`. Do not commit personal videos or generated media.
+## Architecture
+See [MOBILE_ARCHITECTURE.md](MOBILE_ARCHITECTURE.md). Android editing will use a non-destructive timeline model, Media3 playback/Transformer and Android MediaCodec where supported. Basic editing must not depend on the Python backend or internet access.
 
-## Notes
-- The first Faster-Whisper transcription may download a model and can take time.
-- Default model is `small`; set `WHISPER_MODEL` to `base`, `medium`, or another supported model if your PC has sufficient resources.
-- This starter does not yet implement the full timeline editor or final MP4 rendering UI. Those will be added in later stages.
+## Optional Python development API
+Requirements: Python 3.10–3.12 and FFmpeg/FFprobe on PATH.
+
+```bat
+py -3.12 -m venv .venv
+.venv\\Scripts\\activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+API health check: http://127.0.0.1:8000/health
+
+## Safety and privacy
+- User-selected media remains on-device for the Android editor.
+- Do not upload private videos to a cloud service without explicit opt-in.
+- Never overwrite original source media during editing.
+- Do not claim HDR/10-bit preservation until verified on supported physical devices.
