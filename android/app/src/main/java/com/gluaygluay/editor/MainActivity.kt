@@ -438,7 +438,7 @@ private fun buildProjectDocument(
     val videoClips = JSONArray()
     selectedVideo?.let { uri ->
         videoClips.put(JSONObject()
-            .put("id", UUID.randomUUID().toString())
+            .put("id", "video-clip-${entity.id}")
             .put("type", "video")
             .put("assetUri", uri.toString())
             .put("sourceInMs", 0)
