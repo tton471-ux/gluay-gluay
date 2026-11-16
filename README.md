@@ -17,6 +17,9 @@ Open the `android/` folder in Android Studio, use JDK 17, install Android SDK Pl
 
 Current Android scope: choose a video from the system picker and preview/play it locally. Timeline editing, split/delete, project saving, effects, subtitles and export are not implemented in this shell yet.
 
+## GLUAY GLUAY PRO master plan
+See [GLUAY_GLUAY_PRO_MASTER_BLUEPRINT.md](GLUAY_GLUAY_PRO_MASTER_BLUEPRINT.md) for the agreed product scope, feature modules, offline-first architecture, roadmap, acceptance gates and pending defaults. Planned features in that document are specifications, not claims of implementation.
+
 ## Architecture
 See [MOBILE_ARCHITECTURE.md](MOBILE_ARCHITECTURE.md). Android editing will use a non-destructive timeline model, Media3 playback/Transformer and Android MediaCodec where supported. Basic editing must not depend on the Python backend or internet access.
 
