@@ -23,7 +23,50 @@
           }
         ]
       },
-      { "id": "audio-track-1", "type": "audio", "clips": [] },
+      {
+        "id": "music-track-1",
+        "type": "audio",
+        "role": "music",
+        "clips": [
+          {
+            "id": "music-clip-uuid",
+            "sourceUri": "content://...",
+            "sourceType": "imported",
+            "sourceInMs": 0,
+            "sourceOutMs": 12000,
+            "timelineStartMs": 0,
+            "volume": 0.75,
+            "fadeInMs": 500,
+            "fadeOutMs": 800,
+            "muted": false
+          }
+        ]
+      },
+      {
+        "id": "voice-track-1",
+        "type": "audio",
+        "role": "voiceover",
+        "clips": [
+          {
+            "id": "voice-clip-uuid",
+            "sourceUri": "file://...",
+            "sourceType": "recorded",
+            "sourceInMs": 0,
+            "sourceOutMs": 8000,
+            "timelineStartMs": 2500,
+            "volume": 1.0,
+            "fadeInMs": 0,
+            "fadeOutMs": 0,
+            "muted": false
+          }
+        ]
+      },
+      {
+        "id": "extracted-track-1",
+        "type": "audio",
+        "role": "extracted",
+        "clips": []
+      },
       { "id": "caption-track-1", "type": "caption", "clips": [] }
     ]
   }
