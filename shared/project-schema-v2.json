@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 2,
+  "project": {
+    "id": "project-uuid",
+    "name": "Untitled Project",
+    "createdAtEpochMs": 0,
+    "updatedAtEpochMs": 0,
+    "canvas": {
+      "width": 1080,
+      "height": 1920,
+      "aspectRatio": "9:16",
+      "fit": "contain",
+      "background": "#000000"
+    },
+    "frameRate": 30,
+    "colorProfile": {
+      "mode": "sdr",
+      "primaries": "bt709",
+      "transfer": "bt709",
+      "bitDepth": 8
+    },
+    "exportProfile": {
+      "container": "mp4",
+      "videoCodec": "h264",
+      "audioCodec": "aac",
+      "resolution": "1080p",
+      "frameRate": 30
+    },
+    "tracks": [
+      {
+        "id": "video-track-1",
+        "type": "video",
+        "role": "primary",
+        "name": "Video 1",
+        "order": 0,
+        "visible": true,
+        "locked": false,
+        "muted": false,
+        "volume": 1,
+        "clips": [
+          {
+            "id": "video-clip-1",
+            "type": "video",
+            "assetId": "asset-video-1",
+            "sourceUri": "content://selected-video",
+            "sourceInMs": 0,
+            "sourceOutMs": 5000,
+            "timelineStartMs": 0,
+            "speed": 1,
+            "transform": {
+              "x": 0,
+              "y": 0,
+              "scaleX": 1,
+              "scaleY": 1,
+              "rotationDegrees": 0,
+              "opacity": 1,
+              "anchorX": 0.5,
+              "anchorY": 0.5
+            },
+            "keyframes": [],
+            "effects": [],
+            "transitions": []
+          }
+        ]
+      },
+      {
+        "id": "music-track-1",
+        "type": "audio",
+        "role": "music",
+        "name": "Music",
+        "order": 1,
+        "visible": true,
+        "locked": false,
+        "muted": false,
+        "volume": 0.75,
+        "clips": [
+          {
+            "id": "music-clip-1",
+            "type": "audio",
+            "assetId": "asset-music-1",
+            "sourceUri": "content://selected-audio",
+            "sourceInMs": 0,
+            "sourceOutMs": 12000,
+            "timelineStartMs": 0,
+            "volume": 0.75,
+            "fadeInMs": 500,
+            "fadeOutMs": 800,
+            "muted": false,
+            "gainKeyframes": []
+          }
+        ]
+      },
+      {
+        "id": "sfx-track-1",
+        "type": "audio",
+        "role": "soundEffects",
+        "name": "Sound Effects",
+        "order": 2,
+        "visible": true,
+        "locked": false,
+        "muted": false,
+        "volume": 1,
+        "clips": []
+      },
+      {
+        "id": "voice-track-1",
+        "type": "audio",
+        "role": "voiceover",
+        "name": "Voice Over",
+        "order": 3,
+        "visible": true,
+        "locked": false,
+        "muted": false,
+        "volume": 1,
+        "clips": []
+      },
+      {
+        "id": "caption-track-1",
+        "type": "caption",
+        "role": "subtitles",
+        "name": "Subtitles",
+        "order": 4,
+        "visible": true,
+        "locked": false,
+        "muted": false,
+        "clips": []
+      },
+      {
+        "id": "text-track-1",
+        "type": "text",
+        "role": "titles",
+        "name": "Text",
+        "order": 5,
+        "visible": true,
+        "locked": false,
+        "muted": false,
+        "clips": []
+      }
+    ],
+    "assets": [
+      {
+        "id": "asset-video-1",
+        "kind": "video",
+        "uri": "content://selected-video",
+        "displayName": "Source video",
+        "mimeType": "video/mp4",
+        "isExternal": true
+      },
+      {
+        "id": "asset-music-1",
+        "kind": "audio",
+        "uri": "content://selected-audio",
+        "displayName": "Music",
+        "mimeType": "audio/mpeg",
+        "isExternal": true
+      }
+    ],
+    "aiSuggestions": [],
+    "proxyFiles": [],
+    "cacheReferences": []
+  }
+}
