@@ -55,6 +55,7 @@ import androidx.media3.ui.PlayerView
 import com.gluaygluay.editor.audio.AudioAsset
 import com.gluaygluay.editor.audio.VoiceOverRecorder
 import com.gluaygluay.editor.audio.extractAudioFromVideo
+import com.gluaygluay.editor.audio.readMediaDurationMs
 import com.gluaygluay.editor.data.ProjectAutosaver
 import com.gluaygluay.editor.data.ProjectEntity
 import com.gluaygluay.editor.data.ProjectRepository
@@ -86,6 +87,7 @@ class MainActivity : ComponentActivity() {
                 val projects by repository.observeProjects().collectAsState(initial = emptyList())
                 var currentProject by remember { mutableStateOf<ProjectEntity?>(null) }
                 var selectedVideo by remember { mutableStateOf<Uri?>(null) }
+                var selectedVideoDurationMs by remember { mutableStateOf(0L) }
                 val audioAssets = remember { mutableStateListOf<AudioAsset>() }
                 var audioStatus by remember { mutableStateOf("ยังไม่มีไฟล์เสียงในโปรเจกต์") }
                 var isRecording by remember { mutableStateOf(false) }
@@ -94,7 +96,7 @@ class MainActivity : ComponentActivity() {
 
                 fun persistCurrentProject() {
                     val project = currentProject ?: return
-                    val json = buildProjectDocument(project, selectedVideo, audioAssets)
+                    val json = buildProjectDocument(project, selectedVideo, selectedVideoDurationMs, audioAssets)
                     autosaver.schedule(
                         projectId = project.id,
                         name = project.name,
@@ -108,8 +110,9 @@ class MainActivity : ComponentActivity() {
                         val project = repository.openProject(projectId)
                         if (project != null) {
                             currentProject = project
-                            restoreProjectMedia(project.documentJson) { video, assets ->
+                            restoreProjectMedia(project.documentJson) { video, videoDurationMs, assets ->
                                 selectedVideo = video
+                                selectedVideoDurationMs = videoDurationMs
                                 audioAssets.clear()
                                 audioAssets.addAll(assets)
                             }
@@ -123,6 +126,7 @@ class MainActivity : ComponentActivity() {
                         val project = repository.createProject()
                         currentProject = project
                         selectedVideo = null
+                        selectedVideoDurationMs = 0L
                         audioAssets.clear()
                         audioStatus = "สร้างโปรเจกต์ใหม่แล้ว"
                     }
@@ -138,7 +142,8 @@ class MainActivity : ComponentActivity() {
                             )
                         } catch (_: SecurityException) {}
                         val name = queryDisplayName(uri) ?: "Imported audio"
-                        audioAssets.add(AudioAsset(UUID.randomUUID().toString(), uri.toString(), name, "music"))
+                        val duration = readMediaDurationMs(this@MainActivity, uri.toString())
+                        audioAssets.add(AudioAsset(UUID.randomUUID().toString(), uri.toString(), name, "music", duration))
                         audioStatus = "เพิ่มไฟล์เสียงจากเครื่องแล้ว"
                         persistCurrentProject()
                     }
@@ -153,6 +158,7 @@ class MainActivity : ComponentActivity() {
                             )
                         } catch (_: SecurityException) {}
                         selectedVideo = uri
+                        selectedVideoDurationMs = readMediaDurationMs(this@MainActivity, uri.toString())
                         persistCurrentProject()
                     }
                 }
@@ -218,6 +224,7 @@ class MainActivity : ComponentActivity() {
                                 persistCurrentProject()
                                 currentProject = null
                                 selectedVideo = null
+                                selectedVideoDurationMs = 0L
                                 audioAssets.clear()
                             },
                             onPickVideo = { videoPicker.launch(arrayOf("video/*")) },
@@ -233,7 +240,7 @@ class MainActivity : ComponentActivity() {
                                             val out = File(filesDir, "projects/${activeProject.id}/audio/extracted_${System.currentTimeMillis()}.m4a")
                                             extractAudioFromVideo(this@MainActivity, uri, out)
                                             runOnUiThread {
-                                                audioAssets.add(AudioAsset(UUID.randomUUID().toString(), out.absolutePath, out.name, "extracted"))
+                                                audioAssets.add(AudioAsset(UUID.randomUUID().toString(), out.absolutePath, out.name, "extracted", readMediaDurationMs(this@MainActivity, out.absolutePath)))
                                                 audioStatus = "แยกเสียงจากวิดีโอสำเร็จ"
                                                 persistCurrentProject()
                                             }
@@ -248,7 +255,7 @@ class MainActivity : ComponentActivity() {
                                     try {
                                         val output = recorder?.stop()
                                         if (output != null) {
-                                            audioAssets.add(AudioAsset(UUID.randomUUID().toString(), output.absolutePath, output.name, "voiceover"))
+                                            audioAssets.add(AudioAsset(UUID.randomUUID().toString(), output.absolutePath, output.name, "voiceover", readMediaDurationMs(this@MainActivity, output.absolutePath)))
                                             audioStatus = "บันทึกเสียงพากย์เรียบร้อย"
                                             persistCurrentProject()
                                         }
@@ -276,7 +283,7 @@ class MainActivity : ComponentActivity() {
                             },
                             onSaveNow = {
                                 scope.launch {
-                                    val json = buildProjectDocument(activeProject, selectedVideo, audioAssets)
+                                    val json = buildProjectDocument(activeProject, selectedVideo, selectedVideoDurationMs, audioAssets)
                                     autosaver.flush(activeProject.id, activeProject.name, 2, json)
                                     audioStatus = "บันทึกโปรเจกต์แล้ว"
                                 }
@@ -419,6 +426,7 @@ private fun EditorStudio(
 private fun buildProjectDocument(
     entity: ProjectEntity,
     selectedVideo: Uri?,
+    selectedVideoDurationMs: Long,
     audioAssets: List<AudioAsset>
 ): String {
     val project = JSONObject()
@@ -442,7 +450,7 @@ private fun buildProjectDocument(
             .put("type", "video")
             .put("assetUri", uri.toString())
             .put("sourceInMs", 0)
-            .put("sourceOutMs", -1)
+            .put("sourceOutMs", selectedVideoDurationMs.coerceAtLeast(1L))
             .put("timelineStartMs", 0)
             .put("speed", 1.0)
             .put("volume", 1.0))
@@ -459,7 +467,7 @@ private fun buildProjectDocument(
             .put("assetUri", asset.uriOrPath)
             .put("sourceType", asset.sourceType)
             .put("sourceInMs", 0)
-            .put("sourceOutMs", -1)
+            .put("sourceOutMs", asset.durationMs.coerceAtLeast(1L))
             .put("timelineStartMs", 0)
             .put("volume", 1.0)
             .put("muted", false)
@@ -476,8 +484,8 @@ private fun buildProjectDocument(
     tracks.put(JSONObject().put("id", "text-track-1").put("type", "text").put("role", "titles").put("clips", JSONArray()))
 
     val assets = JSONArray()
-    selectedVideo?.let { assets.put(JSONObject().put("id", "video-source").put("kind", "video").put("uri", it.toString())) }
-    audioAssets.forEach { assets.put(JSONObject().put("id", it.id).put("kind", "audio").put("uri", it.uriOrPath).put("displayName", it.displayName).put("sourceType", it.sourceType)) }
+    selectedVideo?.let { assets.put(JSONObject().put("id", "video-source").put("kind", "video").put("uri", it.toString()).put("durationMs", selectedVideoDurationMs)) }
+    audioAssets.forEach { assets.put(JSONObject().put("id", it.id).put("kind", "audio").put("uri", it.uriOrPath).put("displayName", it.displayName) .put("sourceType", it.sourceType).put("durationMs", it.durationMs)) }
 
     return JSONObject()
         .put("schemaVersion", 2)
@@ -490,28 +498,33 @@ private fun buildProjectDocument(
 
 private fun restoreProjectMedia(
     documentJson: String,
-    onRestored: (Uri?, List<AudioAsset>) -> Unit
+    onRestored: (Uri?, Long, List<AudioAsset>) -> Unit
 ) {
     try {
         val project = JSONObject(documentJson).getJSONObject("project")
         val assets = project.optJSONArray("assets") ?: JSONArray()
         var video: Uri? = null
+        var videoDurationMs = 0L
         val audio = mutableListOf<AudioAsset>()
         for (index in 0 until assets.length()) {
             val item = assets.optJSONObject(index) ?: continue
             val uri = item.optString("uri").takeIf { it.isNotBlank() } ?: continue
             when (item.optString("kind")) {
-                "video" -> video = Uri.parse(uri)
+                "video" -> {
+                    video = Uri.parse(uri)
+                    videoDurationMs = item.optLong("durationMs", 0L)
+                }
                 "audio" -> audio.add(AudioAsset(
                     id = item.optString("id", UUID.randomUUID().toString()),
                     uriOrPath = uri,
                     displayName = item.optString("displayName", "Audio"),
-                    sourceType = item.optString("sourceType", "music")
+                    sourceType = item.optString("sourceType", "music"),
+                    durationMs = item.optLong("durationMs", 0L)
                 ))
             }
         }
-        onRestored(video, audio)
+        onRestored(video, videoDurationMs, audio)
     } catch (_: Exception) {
-        onRestored(null, emptyList())
+        onRestored(null, 0L, emptyList())
     }
 }
