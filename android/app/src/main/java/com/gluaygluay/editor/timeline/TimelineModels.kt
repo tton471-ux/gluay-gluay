@@ -84,6 +84,7 @@ object TimelineOperations {
     fun splitClip(track: TimelineTrack, clipId: String, atTimelineMs: Long): TimelineTrack {
         require(!track.locked) { "Track is locked" }
         val clip = track.clips.firstOrNull { it.id == clipId } ?: error("Clip not found")
+        require(clip.sourceDurationMs >= 2L) { "Clip is too short to split" }
         require(atTimelineMs > clip.timelineStartMs && atTimelineMs < clip.timelineEndMs) {
             "Split point must be inside the clip"
         }
