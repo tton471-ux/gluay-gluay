@@ -161,7 +161,7 @@ class MainActivity : ComponentActivity() {
                 ) { granted ->
                     if (granted) {
                         try {
-                            val file = File(cacheDir, "audio/voiceover_${System.currentTimeMillis()}.m4a")
+                            val file = File(filesDir, "projects/${currentProject?.id ?: "unsaved"}/audio/voiceover_${System.currentTimeMillis()}.m4a")
                             val voiceRecorder = VoiceOverRecorder(file)
                             voiceRecorder.start()
                             recorder = voiceRecorder
@@ -230,7 +230,7 @@ class MainActivity : ComponentActivity() {
                                     audioStatus = "กำลังแยกเสียงจากวิดีโอ..."
                                     Thread {
                                         try {
-                                            val out = File(cacheDir, "audio/extracted_${System.currentTimeMillis()}.m4a")
+                                            val out = File(filesDir, "projects/${activeProject.id}/audio/extracted_${System.currentTimeMillis()}.m4a")
                                             extractAudioFromVideo(this@MainActivity, uri, out)
                                             runOnUiThread {
                                                 audioAssets.add(AudioAsset(UUID.randomUUID().toString(), out.absolutePath, out.name, "extracted"))
