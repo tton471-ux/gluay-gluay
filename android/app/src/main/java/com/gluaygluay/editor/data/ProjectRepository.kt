@@ -59,6 +59,13 @@ class ProjectRepository(context: Context) {
         require(schemaVersion >= 1) { "Invalid project schema version" }
         val parsed = JSONObject(documentJson)
         require(parsed.has("project")) { "Project document is missing the project object" }
+        val projectObject = parsed.getJSONObject("project")
+        require(projectObject.optString("id") == projectId) {
+            "Project document ID does not match the database record"
+        }
+        require(parsed.optInt("schemaVersion", schemaVersion) == schemaVersion) {
+            "Project document schema version does not match the database record"
+        }
         val now = System.currentTimeMillis()
         val previous = dao.getProject(projectId)
         dao.upsert(
