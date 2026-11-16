@@ -192,7 +192,22 @@ class MainActivity : ComponentActivity() {
 
                 DisposableEffect(player) {
                     val observer = LifecycleEventObserver { _, event ->
-                        if (event == Lifecycle.Event.ON_STOP) player.pause()
+                        if (event == Lifecycle.Event.ON_STOP) {
+                            player.pause()
+                            val projectToSave = currentProject
+                            if (projectToSave != null) {
+                                val snapshot = buildProjectDocument(
+                                    projectToSave, selectedVideo, selectedVideoDurationMs, audioAssets
+                                )
+                                scope.launch {
+                                    try {
+                                        autosaver.flush(projectToSave.id, projectToSave.name, 2, snapshot)
+                                    } catch (_: Exception) {
+                                        // Keep shutdown resilient; the explicit Save action reports errors in-app.
+                                    }
+                                }
+                            }
+                        }
                     }
                     this@MainActivity.lifecycle.addObserver(observer)
                     onDispose {
