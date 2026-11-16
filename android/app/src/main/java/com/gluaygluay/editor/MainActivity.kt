@@ -32,6 +32,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
@@ -101,8 +103,16 @@ class MainActivity : ComponentActivity() {
                     }
                     onDispose { }
                 }
-                DisposableEffect(Unit) {
+
+                // Android 17 restricts background audio interaction. This editor's
+                // preview is foreground-only, so pause it as soon as the activity stops.
+                DisposableEffect(player) {
+                    val observer = LifecycleEventObserver { _, event ->
+                        if (event == Lifecycle.Event.ON_STOP) player.pause()
+                    }
+                    this@MainActivity.lifecycle.addObserver(observer)
                     onDispose {
+                        this@MainActivity.lifecycle.removeObserver(observer)
                         if (isRecording.value) recorder.value?.cancel()
                         player.release()
                     }
@@ -206,7 +216,7 @@ class MainActivity : ComponentActivity() {
                             Text("• ${asset.displayName}  [${asset.sourceType}]", color = Color(0xFF9EABD0), style = MaterialTheme.typography.bodySmall)
                         }
                         Text(
-                            "ขั้นนี้เพิ่มไฟล์เสียงและบันทึกเสียงเข้ารายการโปรเจกต์ชั่วคราว • ยังไม่ผสมเสียงลง Timeline/Export",
+                            "เพิ่มไฟล์เสียงและบันทึกเสียงเข้ารายการโปรเจกต์ชั่วคราว • ยังไม่ผสมเสียงลง Timeline/Export",
                             color = Color(0xFF8995B8),
                             style = MaterialTheme.typography.bodySmall
                         )
