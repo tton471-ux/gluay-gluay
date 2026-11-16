@@ -41,3 +41,9 @@ API health check: http://127.0.0.1:8000/health
 - Do not upload private videos to a cloud service without explicit opt-in.
 - Never overwrite original source media during editing.
 - Do not claim HDR/10-bit preservation until verified on supported physical devices.
+
+
+## Implementation progress
+- Added `shared/project-schema-v2.json` as an expanded project format covering canvas/export profile, assets, video/audio/text/caption tracks, clip transforms, keyframe/effect/transition placeholders, AI suggestions and proxy/cache references. Schema v1 remains unchanged.
+- Added `android/app/src/main/java/com/gluaygluay/editor/timeline/TimelineModels.kt` with a non-destructive in-memory timeline model and pure add/move/trim/delete/split operations. This is an engine foundation, not yet connected to the app UI or persistent project storage.
+- These changes have not yet been built or tested on Android. Do not treat them as a finished usable timeline until Room persistence, UI integration, rendering and device tests are complete.
