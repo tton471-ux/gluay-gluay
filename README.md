@@ -47,3 +47,9 @@ API health check: http://127.0.0.1:8000/health
 - Added `shared/project-schema-v2.json` as an expanded project format covering canvas/export profile, assets, video/audio/text/caption tracks, clip transforms, keyframe/effect/transition placeholders, AI suggestions and proxy/cache references. Schema v1 remains unchanged.
 - Added `android/app/src/main/java/com/gluaygluay/editor/timeline/TimelineModels.kt` with a non-destructive in-memory timeline model and pure add/move/trim/delete/split operations. This is an engine foundation, not yet connected to the app UI or persistent project storage.
 - These changes have not yet been built or tested on Android. Do not treat them as a finished usable timeline until Room persistence, UI integration, rendering and device tests are complete.
+
+### Project persistence foundation (code added; integration pending)
+- Added Room database/entity/DAO and a repository for creating, saving, listing, opening and deleting versioned project documents.
+- Added a debounced autosave coordinator for editor state changes.
+- Added Room runtime/KTX/compiler dependencies through Kotlin KAPT.
+- Current limitation: this persistence layer is not yet wired into MainActivity/editor UI, and no Android build or device test has been run. It is not yet user-accessible from the app screen.
